@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAMI JAITAPKAR — CFD / FEA / WORKSHOP</title>
+<meta name="description" content="Mohammed Sami Jaitapkar — BEng (Hons) Mechanical Engineering, 2:1, ARU 2026. CFD, FEA, CAD and hands-on manufacturing. F1 brake cooling dissertation, drone structures, HVAC modelling.">
+<!-- Hosted on GitHub Pages: https://mosami10.github.io -->
+<meta property="og:title" content="SAMI JAITAPKAR — CFD / FEA / WORKSHOP">
+<meta property="og:description" content="BEng (Hons) Mechanical Engineering 2:1 · ARU 2026. Nine projects — simulation to workshop.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mosami10.github.io/images/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mosami10.github.io/images/og-image.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0B'/%3E%3Ctext x='32' y='46' font-family='Arial Black,sans-serif' font-weight='900' font-size='40' fill='%23F2F0EA' text-anchor='middle'%3ES%3C/text%3E%3Ccircle cx='52' cy='50' r='6' fill='%23E10600'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0B;
+  --bg2: #121214;
+  --fg: #F2F0EA;
+  --dim: #BDBBB3;
+  --faint: #A6A49C;
+  --line: rgba(242,240,234,0.12);
+  --line-hard: rgba(242,240,234,0.25);
+  --red: #E10600;      /* F1 red */
+  --blu: #2979FF;
+  --amb: #FFB800;
+  --grn: #00C853;
+  --vio: #9D6BFF;
+  --cyn: #00D2FF;
+  --syne: 'Syne', sans-serif;
+  --grot: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--grot);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body.locked { overflow: hidden; }
+
+::selection { background: var(--red); color: var(--fg); }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--blu), var(--red)); }
+
+/* ─── GRAIN ─── */
+.grain {
+  position: fixed; inset: -50%;
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 2000;
+  animation: grainShift 0.9s steps(4) infinite;
+}
+@keyframes grainShift {
+  0% { transform: translate(0,0); } 25% { transform: translate(-2%,3%); }
+  50% { transform: translate(3%,-2%); } 75% { transform: translate(-3%,-3%); }
+  100% { transform: translate(2%,2%); }
+}
+
+/* ─── PRELOADER ─── */
+#preloader {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 5000;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 2rem 2.5rem;
+  transition: transform 0.9s var(--ease);
+  animation: killLoader 0.4s 2.5s forwards;
+}
+#preloader.done { transform: translateY(-100%); }
+@keyframes killLoader { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+.pre-count {
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(5rem, 18vw, 14rem);
+  line-height: 0.8; letter-spacing: -0.04em;
+}
+.pre-count sup { font-size: 0.25em; color: var(--red); font-family: var(--mono); font-weight: 400; }
+.pre-label {
+  font-family: var(--mono); font-size: 0.7rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--faint); padding-bottom: 1.2rem; text-align: right;
+}
+.pre-bar {
+  position: absolute; top: 0; left: 0;
+  height: 3px; width: 100%;
+  background: linear-gradient(90deg, var(--blu), var(--grn), var(--amb), var(--red));
+  transform: scaleX(0); transform-origin: left;
+}
+
+/* ─── CURSOR ─── */
+.cursor {
+  position: fixed; top: 0; left: 0;
+  width: 12px; height: 12px;
+  background: var(--red); border-radius: 50%;
+  pointer-events: none; z-index: 6000;
+  transform: translate(-50%,-50%);
+  transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), background 0.25s;
+  display: none;
+  align-items: center; justify-content: center;
+}
+.cursor.is-hover { width: 52px; height: 52px; mix-blend-mode: difference; background: #fff; }
+.cursor.is-view { width: 74px; height: 74px; background: var(--fg); mix-blend-mode: normal; }
+.cursor .cur-label {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em;
+  color: var(--bg); opacity: 0; text-transform: uppercase;
+}
+.cursor.is-view .cur-label { opacity: 1; }
+@media (pointer: fine) { .cursor { display: flex; } }
+
+/* ─── THERMAL PROGRESS BAR ─── */
+.progress {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 3px; z-index: 4000;
+  background: linear-gradient(90deg, var(--blu), var(--cyn), var(--grn), var(--amb), var(--red));
+  transform: scaleX(0); transform-origin: left;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 2.5rem;
+  mix-blend-mode: difference;
+}
+.nav-logo { font-family: var(--syne); font-weight: 800; font-size: 1.1rem; color: #fff; text-decoration: none; }
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; gap: 2.2rem; list-style: none; }
+.nav-links a {
+  font-family: var(--mono); font-size: 0.68rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: #fff; text-decoration: none; opacity: 0.65;
+  transition: opacity 0.2s;
+}
+.nav-links a:hover, .nav-links a:focus-visible { opacity: 1; outline: none; }
+.nav-burger { display: none; background: none; border: none; flex-direction: column; gap: 5px; padding: 6px; }
+.nav-burger span { width: 24px; height: 2px; background: #fff; transition: all 0.3s var(--ease); }
+
+/* ─── HERO + FLOW FIELD ─── */
+#top {
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 7rem 2.5rem 0;
+  position: relative; overflow: hidden;
+}
+#flow { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-top, .hero-name, .hero-foot { position: relative; z-index: 2; }
+.hero-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 2rem; margin-bottom: auto; padding-top: 2rem;
+}
+.hero-intro {
+  font-family: var(--mono); font-size: 0.78rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim); line-height: 2; max-width: 54ch;
+}
+.hero-intro b { color: var(--fg); font-weight: 500; }
+.hero-intro .r { color: var(--red); }
+.hero-intro .b { color: var(--blu); }
+.hero-intro .g { color: var(--grn); }
+.hero-intro .a { color: var(--amb); }
+.flow-note { opacity: 0.55; }
+@media (pointer: coarse) { .flow-note { display: none; } }
+.badge { position: relative; width: 110px; height: 110px; flex: 0 0 auto; }
+.badge svg { width: 100%; height: 100%; animation: spin 14s linear infinite; }
+.badge svg text {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em;
+  fill: var(--dim); text-transform: uppercase;
+}
+.badge::after {
+  content: '↓'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--red);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hero-name {
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(1.9rem, 8.2vw, 8.6rem);
+  line-height: 0.98; letter-spacing: -0.04em;
+  text-transform: uppercase; padding-bottom: 1.5rem;
+}
+.hero-name .row:first-child { font-size: 1.5em; }
+.hero-name .row {
+  display: block; overflow: hidden;
+  white-space: nowrap;
+  padding: 0.06em 0.03em; margin: -0.03em 0;
+  animation: unclip 0.01s 2.4s forwards;
+}
+@keyframes unclip { to { overflow: visible; } }
+.hero-name .ch {
+  display: inline-block;
+  transform: translateY(120%);
+  animation: riseUp 0.9s var(--ease) forwards;
+}
+.hero-name .outline { color: transparent; -webkit-text-stroke: 2px var(--fg); }
+.hero-name .dot { color: var(--red); -webkit-text-stroke: 0; }
+@keyframes riseUp { to { transform: translateY(0); } }
+
+.hero-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 2rem; border-top: 1px solid var(--line);
+  padding: 1.1rem 0 1.3rem;
+  font-family: var(--mono); font-size: 0.66rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--faint); flex-wrap: wrap;
+}
+.hero-foot .status { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--fg); }
+.hero-foot .status::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--grn); animation: blink 1.8s infinite;
+}
+@keyframes blink { 50% { opacity: 0.25; } }
+.hero-cta { display: inline-flex; gap: 0.6rem; flex-wrap: wrap; }
+.hero-cta a {
+  color: var(--fg); text-decoration: none;
+  border: 1px solid var(--line-hard); border-radius: 100px;
+  padding: 0.55rem 1rem; transition: background 0.25s, border-color 0.25s;
+}
+.hero-cta a:hover, .hero-cta a:focus-visible { background: var(--red); border-color: var(--red); outline: none; }
+.hero-cta a.cta-cv { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.hero-cta a.cta-cv:hover { background: var(--red); color: var(--fg); border-color: var(--red); }
+
+/* ─── MARQUEE ─── */
+.marquee-band {
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  overflow: hidden; padding: 1.2rem 0; background: var(--bg);
+}
+.marquee-track { display: inline-flex; white-space: nowrap; animation: marquee 30s linear infinite; }
+.marquee-track.rev { animation-direction: reverse; animation-duration: 36s; }
+.marquee-band:hover .marquee-track { animation-play-state: paused; }
+.marquee-track span {
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem);
+  text-transform: uppercase; letter-spacing: -0.02em;
+  padding-right: 2.5rem; flex-shrink: 0;
+}
+.marquee-track .o { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+.marquee-track .s1 { color: var(--red); } .marquee-track .s2 { color: var(--blu); }
+.marquee-track .s3 { color: var(--amb); } .marquee-track .s4 { color: var(--grn); }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ─── SECTIONS ─── */
+section { position: relative; }
+.wrap { max-width: 1500px; margin: 0 auto; padding: 0 2.5rem; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 2rem; padding: 6rem 0 3rem; }
+.sec-tag { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; }
+.sec-title {
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(2.2rem, 7vw, 6rem);
+  line-height: 0.9; letter-spacing: -0.03em; text-transform: uppercase;
+}
+.sec-title .o { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+
+/* ─── ABOUT ─── */
+.about-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 4rem; padding-bottom: 4rem; }
+.about-lede { font-size: clamp(1.25rem, 2.2vw, 1.8rem); font-weight: 300; line-height: 1.45; }
+.about-lede b { font-weight: 500; color: var(--red); }
+.about-body { color: var(--dim); font-size: 0.98rem; max-width: 52ch; margin-top: 1.4rem; }
+.about-body p + p { margin-top: 1rem; }
+.about-body strong { color: var(--fg); font-weight: 500; }
+
+/* degree highlights */
+.degree {
+  border: 1px solid var(--line);
+  padding: 1.8rem 1.6rem;
+}
+.degree-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  padding-bottom: 1.2rem; margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+.degree-head h3 { font-family: var(--syne); font-weight: 700; font-size: 1.1rem; line-height: 1.3; }
+.degree-head .cls { font-family: var(--syne); font-weight: 800; font-size: 1.6rem; color: var(--grn); white-space: nowrap; }
+.degree ul { list-style: none; }
+.degree li {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.88rem; color: var(--dim);
+}
+.degree li:last-child { border-bottom: none; }
+.degree li b { color: var(--fg); font-weight: 400; }
+.grade {
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em;
+  padding: 0.25rem 0.65rem; border-radius: 100px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.grade.a { background: rgba(0,200,83,0.14); color: var(--grn); border: 1px solid rgba(0,200,83,0.4); }
+.grade.b { background: rgba(41,121,255,0.14); color: var(--blu); border: 1px solid rgba(41,121,255,0.4); }
+.grade.d { background: rgba(255,184,0,0.12); color: var(--amb); border: 1px solid rgba(255,184,0,0.4); }
+
+/* capability band — the all-rounder strip */
+.caps {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  margin-bottom: 4rem;
+}
+.cap {
+  background: var(--bg); padding: 1.7rem 1.5rem;
+  position: relative; overflow: hidden;
+  transition: transform 0.3s var(--ease-out);
+}
+.cap::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--acc);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.45s var(--ease);
+}
+.cap:hover::before { transform: scaleX(1); }
+.cap:hover { transform: translateY(-4px); }
+.cap i { font-family: var(--mono); font-style: normal; font-size: 0.62rem; letter-spacing: 0.2em; color: var(--acc); display: block; margin-bottom: 0.7rem; }
+.cap h3 { font-family: var(--syne); font-weight: 800; font-size: clamp(1.3rem, 2.4vw, 2rem); text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.cap p { font-size: 0.84rem; color: var(--dim); line-height: 1.55; }
+
+.stats {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  margin-bottom: 6rem;
+}
+.stat { padding: 2.2rem 1.5rem 2.2rem 0; border-right: 1px solid var(--line); }
+.stat:last-child { border-right: none; }
+.stat + .stat { padding-left: 1.5rem; }
+.stat-n { font-family: var(--syne); font-weight: 800; font-size: clamp(2.4rem, 5.5vw, 4.6rem); line-height: 0.9; letter-spacing: -0.03em; color: var(--acc, var(--fg)); }
+.stat-l { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-top: 0.8rem; }
+
+/* ─── STRIP ─── */
+.strip {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.strip figure { background: var(--bg); position: relative; overflow: hidden; aspect-ratio: 4/3; }
+.strip img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: contrast(1.05);
+  transition: transform 0.7s var(--ease-out);
+}
+.strip figure:nth-child(odd) img { transform: rotate(-0.6deg) scale(1.03); }
+.strip figure:nth-child(even) img { transform: rotate(0.6deg) scale(1.03); }
+.strip figure:hover img { transform: rotate(0) scale(1.08); }
+.strip figcaption {
+  position: absolute; left: 0.8rem; bottom: 0.7rem;
+  font-family: var(--mono); font-size: 0.6rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--fg); background: rgba(10,10,11,0.78); padding: 0.25rem 0.6rem;
+}
+
+/* ─── INDEX ─── */
+.index { border-top: 1px solid var(--line); }
+.idx-row {
+  display: grid; grid-template-columns: 90px 1fr auto 60px;
+  align-items: center; gap: 2rem;
+  padding: 2rem 2.5rem;
+  border-bottom: 1px solid var(--line);
+  position: relative; cursor: pointer;
+  max-width: 1500px; margin: 0 auto;
+}
+.idx-row:focus-visible { outline: 2px solid var(--acc, var(--red)); outline-offset: -2px; }
+.idx-row::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--acc, var(--red));
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform 0.4s var(--ease);
+  z-index: 0;
+}
+.idx-row:hover::before { transform: scaleY(1); transform-origin: top; }
+.idx-row > * { position: relative; z-index: 1; }
+.idx-num { font-family: var(--mono); font-size: 0.78rem; color: var(--acc, var(--faint)); transition: color 0.25s; }
+.idx-main { min-width: 0; }
+.idx-title {
+  font-family: var(--syne); font-weight: 700;
+  font-size: clamp(1.25rem, 3.2vw, 2.6rem);
+  line-height: 1.02; letter-spacing: -0.02em; text-transform: uppercase;
+  transition: transform 0.4s var(--ease), color 0.25s;
+}
+.idx-sub {
+  font-family: var(--mono); font-size: 0.66rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--faint); margin-top: 0.45rem; transition: color 0.25s;
+}
+.idx-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+.idx-tags span {
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid var(--line-hard); padding: 0.3rem 0.7rem;
+  border-radius: 100px; color: var(--dim);
+  transition: border-color 0.25s, color 0.25s;
+}
+.idx-arrow { font-size: 1.5rem; text-align: right; color: var(--faint); transition: transform 0.4s var(--ease), color 0.25s; }
+.idx-row:hover .idx-title { transform: translateX(0.8rem); color: var(--bg); }
+.idx-row:hover .idx-num, .idx-row:hover .idx-sub, .idx-row:hover .idx-arrow { color: var(--bg); }
+.idx-row:hover .idx-tags span { color: var(--bg); border-color: rgba(10,10,11,0.5); }
+.idx-row:hover .idx-arrow { transform: translate(4px,-4px) rotate(-45deg); }
+.idx-thumb { display: none; }
+
+/* floating preview */
+.preview {
+  position: fixed; width: 360px; height: 250px;
+  top: 0; left: 0; pointer-events: none; z-index: 800;
+  overflow: hidden; opacity: 0;
+  transform: translate(-50%,-55%) scale(0.9) rotate(-2deg);
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+.preview.on { opacity: 1; transform: translate(-50%,-55%) scale(1) rotate(0); }
+.preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.preview .p-num {
+  width: 100%; height: 100%; display: none;
+  align-items: center; justify-content: center;
+  background: var(--acc, var(--red));
+  font-family: var(--syne); font-weight: 800; font-size: 6rem; color: var(--bg);
+}
+
+/* ─── CASE STUDY OVERLAY ─── */
+.cs {
+  position: fixed; inset: 0; z-index: 3000;
+  background: var(--bg);
+  transform: translateY(100%);
+  transition: transform 0.65s var(--ease);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  visibility: hidden;
+  border-top: 3px solid var(--acc, var(--red));
+}
+.cs.open { transform: translateY(0); visibility: visible; }
+.cs-inner { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem 4rem; position: relative; }
+.cs-bar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.4rem 0;
+  background: linear-gradient(to bottom, var(--bg) 75%, transparent);
+}
+.cs-bar .cs-crumb { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc, var(--red)); }
+.cs-close {
+  background: none; border: 1px solid var(--line-hard); border-radius: 100px;
+  color: var(--fg); font-family: var(--mono); font-size: 0.7rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.7rem 1.4rem; cursor: pointer;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.cs-close:hover, .cs-close:focus-visible { background: var(--fg); border-color: var(--fg); color: var(--bg); outline: none; }
+.cs-watermark {
+  position: absolute; top: 2rem; right: 0;
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(8rem, 24vw, 22rem);
+  line-height: 0.8; color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242,240,234,0.1);
+  pointer-events: none; user-select: none;
+}
+.cs-title {
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(2rem, 7.4vw, 6.5rem);
+  line-height: 0.92; letter-spacing: -0.03em; text-transform: uppercase;
+  padding: 4rem 0 1.5rem; max-width: 15ch;
+  position: relative;
+}
+.cs-title .x { color: var(--acc, var(--red)); }
+.cs-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; padding-bottom: 2.5rem; }
+.cs-meta span {
+  font-family: var(--mono); font-size: 0.64rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid var(--line-hard); border-radius: 100px;
+  padding: 0.35rem 0.8rem; color: var(--dim);
+}
+.cs-specs {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  margin-bottom: 3rem;
+}
+.cs-specs div { padding: 1.2rem 1rem 1.2rem 0; border-right: 1px solid var(--line); }
+.cs-specs div:last-child { border-right: none; }
+.cs-specs div + div { padding-left: 1rem; }
+.cs-specs b { display: block; font-family: var(--syne); font-weight: 700; font-size: 1.15rem; color: var(--acc, var(--fg)); }
+.cs-specs i { font-family: var(--mono); font-style: normal; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+.cs-story { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; padding-bottom: 3.5rem; }
+.cs-story h4 {
+  font-family: var(--mono); font-size: 0.64rem;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--acc, var(--red)); margin-bottom: 0.9rem;
+}
+.cs-story p { font-size: 0.92rem; color: var(--dim); line-height: 1.65; }
+.cs-story strong { color: var(--fg); font-weight: 500; }
+.cs-imgs { display: flex; flex-direction: column; gap: 1.2rem; padding-bottom: 3.5rem; }
+.cs-imgs figure {
+  position: relative; overflow: hidden; border: 1px solid var(--line);
+  opacity: 0; transform: translateY(26px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.cs-imgs figure.in { opacity: 1; transform: none; }
+.cs-imgs img { width: 100%; display: block; }
+.cs-imgs figcaption {
+  position: absolute; left: 1rem; bottom: 0.9rem;
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--fg); background: rgba(10,10,11,0.8); padding: 0.3rem 0.7rem;
+}
+.cs-nav { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--line); padding-top: 2rem; }
+.cs-nav button {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--syne); font-weight: 700;
+  font-size: clamp(0.95rem, 2.4vw, 1.6rem);
+  color: var(--dim); text-transform: uppercase; letter-spacing: -0.01em;
+  transition: color 0.2s;
+  text-align: left;
+}
+.cs-nav button:hover, .cs-nav button:focus-visible { color: var(--acc, var(--red)); outline: none; }
+.cs-nav button small { display: block; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.2em; color: var(--faint); margin-bottom: 0.3rem; }
+.cs-nav button:last-child { text-align: right; }
+
+/* ─── TOOLBOX ─── */
+.toolbox {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  margin-bottom: 6rem;
+}
+.tool-cell {
+  background: var(--bg); padding: 1.8rem 1.6rem;
+  position: relative; overflow: hidden;
+  transition: background 0.3s;
+}
+.tool-cell::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--acc, var(--red));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.45s var(--ease);
+}
+.tool-cell:hover::before { transform: scaleX(1); }
+.tool-cell:hover { background: var(--bg2); }
+.tool-cell h3 { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc, var(--red)); margin-bottom: 1.1rem; }
+.tool-cell ul { list-style: none; }
+.tool-cell li { font-size: 0.92rem; color: var(--dim); padding: 0.28rem 0; }
+.tool-cell li b { color: var(--fg); font-weight: 500; }
+
+
+/* ─── EXPERIENCE ─── */
+#experience { padding: 8rem 0 2rem; }
+.xp { border-top: 1px solid var(--line); }
+.xp-row {
+  display: grid; grid-template-columns: 11rem 1fr 1.2fr; gap: 2rem;
+  padding: 2rem 0; border-bottom: 1px solid var(--line); align-items: start;
+}
+.xp-when { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--acc, var(--faint)); padding-top: 0.35rem; }
+.xp-role { font-family: var(--syne); font-weight: 800; font-size: clamp(1.1rem, 2vw, 1.6rem); text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; }
+.xp-org { display: block; font-family: var(--mono); font-weight: 400; font-size: 0.68rem; letter-spacing: 0.14em; color: var(--faint); margin-top: 0.5rem; text-transform: uppercase; }
+.xp-what { color: var(--dim); font-size: 0.94rem; line-height: 1.6; }
+.xp-what strong { color: var(--fg); font-weight: 500; }
+
+/* ─── CONTACT ─── */
+#contact { padding-bottom: 4rem; }
+.contact-mega {
+  font-family: var(--syne); font-weight: 800;
+  font-size: clamp(2.6rem, 13vw, 13rem);
+  line-height: 0.86; letter-spacing: -0.04em; text-transform: uppercase;
+  padding: 6rem 0 3.5rem;
+}
+.contact-mega .o { color: transparent; -webkit-text-stroke: 2px var(--fg); }
+.contact-mega .x { color: var(--red); }
+.contact-sub { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin: -2rem 0 3rem; }
+.contact-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 2rem; flex-wrap: wrap;
+  border-top: 1px solid var(--line); padding-top: 2.5rem;
+}
+.email-btn {
+  font-family: var(--syne); font-weight: 700;
+  font-size: clamp(0.95rem, 2.6vw, 1.9rem);
+  color: var(--fg); text-decoration: none;
+  border: 1px solid var(--line-hard); border-radius: 100px;
+  padding: 1.1rem 2.4rem;
+  display: inline-flex; align-items: center; gap: 1rem;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s;
+  will-change: transform;
+  max-width: 100%;
+}
+.email-btn:hover, .email-btn:focus-visible { background: var(--red); border-color: var(--red); color: var(--fg); outline: none; }
+.email-btn .a { transition: transform 0.3s var(--ease); }
+.email-btn:hover .a { transform: translate(4px,-4px); }
+.socials { display: flex; gap: 1.8rem; }
+.socials a {
+  font-family: var(--mono); font-size: 0.72rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--dim); text-decoration: none; transition: color 0.2s;
+}
+.socials a:hover { color: var(--red); }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--line); margin-top: 4rem;
+  padding: 1.6rem 2.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+}
+footer .r { color: var(--red); }
+
+/* ─── REVEALS ─── */
+.js .rv { opacity: 0; transform: translateY(30px); transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out); }
+.js .rv.in { opacity: 1; transform: none; }
+#page { will-change: transform; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 980px) {
+  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .caps { grid-template-columns: repeat(2, 1fr); }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stats .stat:first-child { grid-column: 1 / -1; border-right: none; border-bottom: 1px solid var(--line); }
+  .stat:nth-child(2), .stat:nth-child(4) { padding-left: 0; }
+  .stat:nth-child(3) { border-right: none; }
+  .xp-row { grid-template-columns: 1fr; gap: 0.6rem; }
+  .stat:nth-child(2) { border-right: none; }
+  .stat:nth-child(3) { border-top: 1px solid var(--line); padding-left: 0; }
+  .stat:nth-child(4) { border-top: 1px solid var(--line); }
+  .strip { grid-template-columns: repeat(2, 1fr); }
+  .toolbox { grid-template-columns: repeat(2, 1fr); }
+  .idx-row { grid-template-columns: 60px 1fr 40px; }
+  .idx-tags { display: none; }
+  .preview { display: none; }
+  .cs-story { grid-template-columns: 1fr; gap: 1.8rem; }
+}
+@media (max-width: 640px) {
+  nav { padding: 1.1rem 1.2rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  #top { padding: 5.5rem 1.2rem 0; }
+  .wrap { padding: 0 1.2rem; }
+  .hero-name { font-size: clamp(1.4rem, 8.4vw, 4rem); }
+  .hero-intro { font-size: 0.64rem; line-height: 1.9; }
+  .idx-row { padding: 1.5rem 1.2rem; gap: 1rem; }
+  .idx-thumb { display: block; grid-column: 1 / -1; aspect-ratio: 16/9; overflow: hidden; order: -1; }
+  .idx-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  #preloader { padding: 1.2rem; }
+  .badge { width: 80px; height: 80px; }
+  .hero-top { flex-direction: column-reverse; }
+  .sec-head { flex-direction: column; gap: 0.8rem; padding: 4rem 0 2rem; }
+  .caps { grid-template-columns: 1fr 1fr; }
+  .cap { padding: 1.2rem 1rem; }
+  .toolbox { grid-template-columns: 1fr; }
+  .strip { grid-template-columns: 1fr 1fr; }
+  footer { padding: 1.4rem 1.2rem; justify-content: center; text-align: center; }
+  .cs-inner { padding: 0 1.2rem 3rem; }
+  .email-btn { padding: 0.9rem 1.4rem; gap: 0.6rem; }
+  .contact-row { flex-direction: column; align-items: flex-start; }
+  .degree { padding: 1.3rem 1.1rem; }
+  .degree li { font-size: 0.8rem; }
+}
+
+/* mobile nav open */
+.nav-links.open {
+  display: flex !important;
+  position: fixed; inset: 0;
+  background: var(--bg);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 2.2rem; z-index: 950;
+}
+.nav-links.open a { font-size: 1rem; opacity: 1; }
+
+/* ─── REDUCED MOTION ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  #preloader, .grain, .cursor, .preview, #flow { display: none !important; }
+  .hero-name .ch { transform: none; animation: none; }
+  .hero-name .row { overflow: visible; }
+  .js .rv { opacity: 1 !important; transform: none !important; }
+  .marquee-track { animation: none; }
+  .cs { transition: none; }
+  .cs-imgs figure { opacity: 1 !important; transform: none !important; }
+  #page { transform: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"><span class="cur-label">Open</span></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- PRELOADER -->
+<div id="preloader" aria-hidden="true">
+  <div class="pre-bar" id="pre-bar"></div>
+  <div class="pre-count"><span id="pre-count">00</span><sup>%</sup></div>
+  <div class="pre-label">Sami Jaitapkar<br>BEng (Hons) Mechanical Engineering<br>Graduate mechanical engineer</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#top" class="nav-logo">SJ<span>.</span></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about" data-scramble>About</a></li>
+    <li><a href="#work" data-scramble>Work</a></li>
+    <li><a href="#toolbox" data-scramble>Toolbox</a></li>
+    <li><a href="#experience" data-scramble>Experience</a></li>
+    <li><a href="#contact" data-scramble>Contact</a></li>
+  </ul>
+  <button class="nav-burger" id="nav-burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- floating hover preview (outside #page — stays fixed) -->
+<div class="preview" id="preview" aria-hidden="true">
+  <img id="preview-img" src="" alt="">
+  <div class="p-num" id="preview-num">07</div>
+</div>
+
+<!-- CASE STUDY OVERLAY -->
+<div class="cs" id="cs" role="dialog" aria-modal="true" aria-label="Project case study">
+  <div class="cs-inner">
+    <div class="cs-bar">
+      <span class="cs-crumb" id="cs-crumb">/01 — Case study</span>
+      <button class="cs-close" id="cs-close">Close ✕</button>
+    </div>
+    <div class="cs-watermark" id="cs-watermark">01</div>
+    <h2 class="cs-title" id="cs-title"></h2>
+    <div class="cs-meta" id="cs-meta"></div>
+    <div class="cs-specs" id="cs-specs"></div>
+    <div class="cs-story">
+      <div><h4>The brief</h4><p id="cs-problem"></p></div>
+      <div><h4>The approach</h4><p id="cs-method"></p></div>
+      <div><h4>The result</h4><p id="cs-verdict"></p></div>
+    </div>
+    <div class="cs-imgs" id="cs-imgs"></div>
+    <div class="cs-nav">
+      <button id="cs-prev"><small>← Previous</small><span id="cs-prev-t"></span></button>
+      <button id="cs-next"><small>Next →</small><span id="cs-next-t"></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="page">
+
+<!-- HERO -->
+<header id="top">
+  <canvas id="flow" aria-hidden="true"></canvas>
+  <div class="hero-top">
+    <p class="hero-intro">
+      <b>Mohammed Sami Jaitapkar</b> — mechanical engineer.<br>
+      BEng (Hons) <span class="g">2:1</span> · Anglia Ruskin · 2026.<br>
+      + 3-yr diploma, <span class="a">Distinction</span> — 5 yrs of mech eng.<br>
+      <span class="r">CFD</span> · <span class="b">FEA</span> · <span class="a">CAD</span> · <span class="g">workshop</span> — sim to steel.<br>
+      Flagship: F1 brake cooling CHT — <span class="r">712 K</span> resolved.<br>
+      <span class="flow-note">← live flow field. move your cursor through it.</span>
+    </p>
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <defs><path id="circ" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"/></defs>
+        <text><textPath href="#circ">open to work — graduate 2026 — open to work —</textPath></text>
+      </svg>
+    </div>
+  </div>
+  <h1 class="hero-name" aria-label="Sami Jaitapkar" id="hero-name">
+    <span class="row" data-word="SAMI"></span>
+    <span class="row outline" data-word="JAITAPKAR" data-dot="."></span>
+  </h1>
+  <div class="hero-foot">
+    <span class="status">Open to graduate roles — UK</span>
+    <span class="hero-cta">
+      <a href="#work">See the work ↓</a>
+      <a href="https://www.linkedin.com/in/sami-jaitapkar-5805012b0/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a href="mailto:samijaitapkar10@gmail.com">Email ↗</a>
+      <a href="cv/Sami-Jaitapkar-CV.pdf" download class="cta-cv">Download CV ↓</a>
+    </span>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee-band" aria-hidden="true">
+  <div class="marquee-track">
+    <span>CFD <span class="s1">✦</span> FEA <span class="s2">✦</span> <span class="o">THERMAL</span> <span class="s3">✦</span> FATIGUE <span class="s4">✦</span> <span class="o">CAD</span> <span class="s1">✦</span> ADDITIVE <span class="s2">✦</span> <span class="o">WORKSHOP</span> <span class="s3">✦</span> </span>
+    <span>CFD <span class="s1">✦</span> FEA <span class="s2">✦</span> <span class="o">THERMAL</span> <span class="s3">✦</span> FATIGUE <span class="s4">✦</span> <span class="o">CAD</span> <span class="s1">✦</span> ADDITIVE <span class="s2">✦</span> <span class="o">WORKSHOP</span> <span class="s3">✦</span> </span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag" style="color:var(--red)">01 — About</span>
+      <h2 class="sec-title rv">Decisions,<br><span class="o">defended with data.</span></h2>
+    </div>
+    <div class="about-grid">
+      <div class="rv">
+        <p class="about-lede">Simulation without engineering judgement is just <b>pictures.</b> Every project here makes a call — and backs it with numbers.</p>
+        <div class="about-body">
+          <p>Nine projects across automotive, aerospace and energy. The flagship: an <strong>F1 brake cooling dissertation</strong>: three configurations compared in ANSYS Fluent with conjugate heat transfer, resolving a 712 K peak disc temperature. The scoop duct (B) cooled the disc 109 K more than the dome duct on 65% less mass flow. The unducted baseline hit thermal runaway.</p>
+          <p>But the work doesn't stop at the screen. The same portfolio includes <strong>workshop-built prototypes</strong>, tensile and vibration lab testing, 3D-printed structural parts, and Arduino-controlled machines — from Mumbai diploma (First Class with Distinction) to a <strong>BEng (Hons) at Anglia Ruskin, graduated 2026 with a 2:1.</strong></p>
+          <p>That's <strong>five years of mechanical engineering training</strong>: a three-year technical diploma in Mumbai (83%, Distinction) built the hands-on base — engineering drawing, machine design, thermal and fluid engineering, solid modelling — before the BEng added high-fidelity simulation on top.</p>
+        </div>
+      </div>
+      <div class="degree rv">
+        <div class="degree-head">
+          <h3>BEng (Hons) Mechanical Engineering<br><span style="color:var(--faint);font-size:0.8rem;font-family:var(--mono)">Anglia Ruskin University — 2026</span></h3>
+          <span class="cls">2:1</span>
+        </div>
+        <ul>
+          <li><b>Materials Science, Solid Mechanics &amp; Vibration</b><span class="grade a">73 · A</span></li>
+          <li><b>CAE &amp; Manufacturing Project</b><span class="grade a">70 · A</span></li>
+          <li><b>Applied Engineering Mathematics</b><span class="grade a">70 · A</span></li>
+          <li><b>Advanced Structural Analysis &amp; Design</b><span class="grade b">67 · B</span></li>
+          <li><b>Individual Project — F1 dissertation</b><span class="grade b">66 · B</span></li>
+          <li><b>Diploma, Mechanical Engineering (Mumbai)</b><span class="grade d">83% · Dist.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="caps rv">
+      <div class="cap" style="--acc:var(--blu)">
+        <i>01 / SIMULATE</i>
+        <h3>Simulate</h3>
+        <p>ANSYS Fluent · Mechanical · QBlade. Turbulence modelling, CHT, fatigue and structural validation.</p>
+      </div>
+      <div class="cap" style="--acc:var(--red)">
+        <i>02 / DESIGN</i>
+        <h3>Design</h3>
+        <p>Inventor CAD, DfMA-led redesigns, lattice structures, carbon-fibre assemblies with full section detail.</p>
+      </div>
+      <div class="cap" style="--acc:var(--amb)">
+        <i>03 / BUILD</i>
+        <h3>Build</h3>
+        <p>Workshop fabrication, FDM printing in PETG, circuit design in Multisim, Arduino control — machines that run.</p>
+      </div>
+      <div class="cap" style="--acc:var(--grn)">
+        <i>04 / TEST</i>
+        <h3>Test</h3>
+        <p>Tensile and vibration lab testing, natural frequency measurement, prototype trials — FEA checked against reality.</p>
+      </div>
+    </div>
+
+    <div class="stats rv">
+      <div class="stat" style="--acc:var(--cyn)"><div class="stat-n" data-count="5">5<em style="font-style:normal;font-size:0.45em"> yrs</em></div><div class="stat-l">Mech eng training</div></div>
+      <div class="stat" style="--acc:var(--red)"><div class="stat-n" data-count="9">9<em style="font-style:normal">+</em></div><div class="stat-l">Projects</div></div>
+      <div class="stat" style="--acc:var(--grn)"><div class="stat-n">2:1</div><div class="stat-l">BEng (Hons) · 2026</div></div>
+      <div class="stat" style="--acc:var(--blu)"><div class="stat-n" data-count="73">73</div><div class="stat-l">Best module mark · A</div></div>
+      <div class="stat" style="--acc:var(--amb)"><div class="stat-n" data-count="83">83<em style="font-style:normal">%</em></div><div class="stat-l">Diploma · Distinction</div></div>
+    </div>
+  </div>
+
+  <div class="strip rv">
+    <figure><img src="images/opt/nf1-a.jpg" alt="F1 brake disc conjugate heat transfer, 712 K peak" loading="lazy"><figcaption>F1 · CHT — 712 K</figcaption></figure>
+    <figure><img src="images/opt/nspdr.jpg" alt="SPIDR-Jet drone full assembly render" loading="lazy"><figcaption>SPIDR-Jet · assembly</figcaption></figure>
+    <figure><img src="images/opt/nfan-a.jpg" alt="Carbon fibre ducted fan section view" loading="lazy"><figcaption>EDF · carbon section</figcaption></figure>
+    <figure><img src="images/opt/wt-b.jpg" alt="QBlade wind turbine simulation" loading="lazy"><figcaption>Turbine · QBlade</figcaption></figure>
+  </div>
+</section>
+
+<!-- PROJECT INDEX -->
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag" style="color:var(--blu)">02 — Work</span>
+      <h2 class="sec-title rv">Selected work.<br><span class="o">Nine case studies.</span></h2>
+    </div>
+  </div>
+  <div class="index" id="index"></div>
+</section>
+
+<!-- TOOLBOX -->
+<section id="toolbox">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag" style="color:var(--amb)">03 — Toolbox</span>
+      <h2 class="sec-title rv">Simulation<br><span class="o">to workshop.</span></h2>
+    </div>
+    <div class="toolbox rv">
+      <div class="tool-cell" style="--acc:var(--blu)">
+        <h3>CFD</h3>
+        <ul>
+          <li><b>ANSYS Fluent 2025 R2</b></li>
+          <li>Fluent Meshing · poly-hexcore</li>
+          <li>ANSYS Discovery</li>
+          <li>k-ω SST · CHT · MRF</li>
+          <li>Mesh independence · y+</li>
+        </ul>
+      </div>
+      <div class="tool-cell" style="--acc:var(--red)">
+        <h3>FEA / Structural</h3>
+        <ul>
+          <li><b>ANSYS Mechanical</b></li>
+          <li>Static Structural</li>
+          <li>QBlade · BEM + FEA</li>
+          <li>Fatigue · Goodman · Miner</li>
+          <li>Fracture mechanics</li>
+        </ul>
+      </div>
+      <div class="tool-cell" style="--acc:var(--vio)">
+        <h3>CAD / Modelling</h3>
+        <ul>
+          <li><b>Autodesk Inventor</b></li>
+          <li>DfMA principles</li>
+          <li>MATLAB · Simulink</li>
+          <li>Simscape · Witness DES</li>
+          <li>Multisim</li>
+        </ul>
+      </div>
+      <div class="tool-cell" style="--acc:var(--amb)">
+        <h3>Workshop / Test</h3>
+        <ul>
+          <li><b>Fabrication &amp; machining</b></li>
+          <li>Bambu Studio · FDM (PETG/PLA)</li>
+          <li>Tensile testing</li>
+          <li>Vibration testing</li>
+          <li>Arduino builds</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="marquee-band" aria-hidden="true">
+  <div class="marquee-track rev">
+    <span><span class="o">ANSYS FLUENT</span> <span class="s2">✦</span> MATLAB <span class="s3">✦</span> <span class="o">INVENTOR</span> <span class="s4">✦</span> QBLADE <span class="s1">✦</span> <span class="o">TENSILE TEST</span> <span class="s2">✦</span> ARDUINO <span class="s3">✦</span> <span class="o">3D PRINT</span> <span class="s4">✦</span> </span>
+    <span><span class="o">ANSYS FLUENT</span> <span class="s2">✦</span> MATLAB <span class="s3">✦</span> <span class="o">INVENTOR</span> <span class="s4">✦</span> QBLADE <span class="s1">✦</span> <span class="o">TENSILE TEST</span> <span class="s2">✦</span> ARDUINO <span class="s3">✦</span> <span class="o">3D PRINT</span> <span class="s4">✦</span> </span>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag" style="color:var(--grn)">04 — Experience</span>
+      <h2 class="sec-title rv">Five years in.<br><span class="o">Still building.</span></h2>
+    </div>
+    <div class="xp rv">
+      <div class="xp-row" style="--acc:var(--red)">
+        <div class="xp-when">2024 — 2026</div>
+        <div class="xp-role">BEng (Hons) Mechanical Engineering<span class="xp-org">Anglia Ruskin University · Chelmsford · 2:1</span></div>
+        <div class="xp-what">Individual dissertation on <strong>F1 brake cooling</strong> (CFD + conjugate heat transfer, ANSYS Fluent), supervised by Dr Samuel J. McMaster. Industry-set work includes a <strong>BAE Systems live brief</strong> — the SPIDR-Jet drone chassis, taken from FEA through to additive manufacturing and physical testing.</div>
+      </div>
+      <div class="xp-row" style="--acc:var(--amb)">
+        <div class="xp-when">2019 — 2022</div>
+        <div class="xp-role">Diploma in Mechanical Engineering<span class="xp-org">Mohammed Haji Saboo Siddik Polytechnic · Mumbai · 83%, Distinction</span></div>
+        <div class="xp-what">Three-year technical diploma: engineering drawing, CAD and solid modelling, strength of materials, thermal and fluid engineering, theory of machines, machine design and additive manufacturing. Final project: <strong>voice-based lift control</strong>.</div>
+      </div>
+      <div class="xp-row" style="--acc:var(--blu)">
+        <div class="xp-when">Oct 2025 — now</div>
+        <div class="xp-role">Warehouse Operative<span class="xp-org">First Call Agency · placed at DPD UK · Chelmsford</span></div>
+        <div class="xp-what">Sort, scan, load and stage parcels for next-day delivery routes to <strong>hourly throughput targets</strong>, worked alongside final-year study.</div>
+      </div>
+      <div class="xp-row" style="--acc:var(--vio)">
+        <div class="xp-when">Feb 2026 — now</div>
+        <div class="xp-role">Front of House / Floor Team<span class="xp-org">The Courtyard</span></div>
+        <div class="xp-what">Restaurant, bar, live-event and weekend nightclub shifts, held alongside the warehouse role.</div>
+      </div>
+      <div class="xp-row" style="--acc:var(--grn)">
+        <div class="xp-when">Nov 2023 — Oct 2025</div>
+        <div class="xp-role">Customer Service Assistant<span class="xp-org">John Lewis Partnership · Chelmsford · part-time</span></div>
+        <div class="xp-what">Front-of-house across multiple departments. <strong>Awarded a Gold Star</strong> by management for helpfulness — the communication habits I bring to every team project.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <h2 class="contact-mega rv">Let's <span class="x">talk</span><span class="o">.</span></h2>
+    <p class="contact-sub rv">Open to graduate mechanical engineering roles — UK. I can make it happen.</p>
+    <div class="contact-row rv">
+      <a href="mailto:samijaitapkar10@gmail.com" class="email-btn" id="email-btn">
+        samijaitapkar10@gmail.com <span class="a">↗</span>
+      </a>
+      <div class="socials">
+        <a href="cv/Sami-Jaitapkar-CV.pdf" download>Download CV ↓</a>
+        <a href="https://www.linkedin.com/in/sami-jaitapkar-5805012b0/" id="li-link" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© MMXXVI — Mohammed Sami Jaitapkar</span>
+  <span>Chelmsford, UK — <span id="clock">--:--</span> local</span>
+  <span>BEng (Hons) Mechanical Engineering <span class="r">●</span> ARU</span>
+</footer>
+
+</div><!-- /#page -->
+
+<script>
+(() => {
+  'use strict';
+  const rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  if (!rm) document.documentElement.classList.add('js');
+
+  // ═══ CASE STUDY DATA ═══════════════════════════════════
+  const CS = {
+    '01': {
+      acc: 'var(--red)',
+      title: 'F1 <span class="x">Brake Cooling</span> System',
+      sub: 'Individual dissertation · three configurations, one clear winner',
+      tags: ['ANSYS Fluent', 'k-ω SST', 'CHT', 'MRF', 'Inventor'],
+      specs: [['109 K','Extra cooling, Duct B'],['0.82%','Mesh GCI'],['712 K','Peak disc temp'],['278 mm','Disc Ø'],['1500','RPM']],
+      problem: 'Carbon brake discs run close to their thermal limit. Without effective duct cooling, disc temperature climbs lap after lap and braking performance degrades. The task: quantify exactly how duct geometry changes cooling performance — before anything is manufactured.',
+      method: 'Three configurations (unducted disc, three-outlet dome Duct A, single-outlet bell-mouth scoop Duct B) modelled in <strong>ANSYS Fluent 2025 R2</strong> with k-ω SST turbulence. Isothermal moving-wall runs ranked heat transfer coefficients, <strong>MRF</strong> captured disc rotation, and full <strong>conjugate heat transfer</strong> resolved the temperature field inside the solid disc. Mesh verified with a three-mesh <strong>Richardson GCI of 0.82%</strong> on a 9.7M-cell mesh (published benchmark 1.40%), plus y+ checks.',
+      verdict: '<strong>Duct B cooled the disc 109 K more than Duct A while carrying 65% less mass flow</strong>, traced to an 88.7% higher inlet Reynolds number on a 30.2 mm hydraulic diameter. The unducted baseline showed thermal runaway. CHT resolved a <strong>712 K peak disc temperature</strong>, confirming the isothermal assumption under-predicts reality. Final-year Individual Project — assessed at <strong>66 (B)</strong>.',
+      imgs: [['images/opt/nf1-a.jpg','Conjugate heat transfer — 712 K peak'],['images/opt/nf1-c.jpg','Velocity magnitude — 22 m/s peak'],['images/opt/nf1-b.jpg','Pathlines through the rotating domain'],['images/opt/nf1-d.jpg','Particle tracks — radial outflow'],['images/opt/nf1-e.jpg','Brake duct geometry — Inventor'],['images/opt/f1-b.jpg','Static pressure contour']],
+      img: 'images/opt/nf1-a.jpg'
+    },
+    '02': {
+      acc: 'var(--blu)',
+      title: 'Automotive <span class="x">HVAC</span> Duct',
+      sub: 'CAD → CFD → Simulink · balanced outlet flow',
+      tags: ['Fluent', 'Poly-hexcore', 'Simulink', 'Simscape', 'Discovery'],
+      specs: [['199→145 Pa','Pressure drop'],['−27%','ΔP reduction'],['~50/50','Outlet mass-flow split'],['6','CAD–CFD iterations'],['1D+3D','Coupled models']],
+      problem: 'Cabin airflow fails when one vent dominates. With the duct envelope fixed by packaging constraints, the internal geometry has to deliver balanced flow to both outlets at an acceptable pressure drop.',
+      method: 'Duct CAD in <strong>Inventor</strong> from the packaging envelope; rapid early CFD in <strong>ANSYS Discovery</strong>; detailed runs in Fluent on a <strong>poly-hexcore mesh</strong>. Velocity fields, pressure drop and outlet split extracted, then a 1D <strong>Simulink/Simscape</strong> thermal network coupled to the CFD results for system-level behaviour.',
+      verdict: 'Over six iterations <strong>pressure drop fell 27%, from ~199 Pa to ~145 Pa</strong> (final Design 4.2), and the outlet mass-flow split landed near-equal. Peak velocity (~26 m/s) stayed above its limit; recorded as the open trade-off of the packaging constraint and set as the next iteration’s target.',
+      imgs: [['images/opt/hvac-a.jpg','Duct velocity field'],['images/opt/hvac-b.jpg','Flow domain geometry'],['images/opt/hvac-c.jpg','Outlet flow distribution'],['images/opt/hvac-d.jpg','Simulink thermal model']],
+      img: 'images/opt/hvac-a.jpg'
+    },
+    '03': {
+      acc: 'var(--amb)',
+      title: 'SPIDR-Jet <span class="x">Drone Chassis</span>',
+      sub: 'BAE Systems brief · FEA + additive manufacturing',
+      tags: ['ANSYS Mechanical', 'FEA', 'PETG', 'Carbon fibre', 'Bambu', 'Witness'],
+      specs: [['−13.8%','Mass (93.48 g)'],['23.4 MPa','Peak von Mises'],['4','FEA iterations'],['42→500','Units/month (DES)']],
+      problem: 'A jet-powered walking drone chassis, set as a BAE Systems brief: minimise mass without compromising structural integrity — and prove the design can actually be manufactured, not just rendered.',
+      method: 'Two chassis concepts through <strong>ANSYS Static Structural</strong> under weight and impact load cases: full-lattice PLA versus selective-lattice PETG. The electric ducted fan housing was designed in <strong>carbon fibre</strong> with full section detail in Inventor. Print planning in <strong>Bambu Studio</strong>; production throughput modelled in <strong>Witness</strong> discrete event simulation.',
+      verdict: 'The full-lattice concept failed structural validation and was rejected. The <strong>selective-lattice PETG chassis came in 13.8% lighter (93.48 g) at 23.4 MPa peak stress</strong>, validated by Tinius Olsen compression testing, and the Witness model scaled output from ~42 to ~500 units a month. Part of the CAE &amp; Manufacturing Project — assessed at <strong>70 (A)</strong>.',
+      imgs: [['images/opt/nspdr.jpg','SPIDR-Jet — full assembly'],['images/opt/nfan-a.jpg','Carbon-fibre EDF housing — section'],['images/opt/nfan-b.jpg','EDF spinner and duct — section'],['images/opt/cae-a.jpg','Chassis FEA — stress field']],
+      img: 'images/opt/nspdr.jpg'
+    },
+    '04': {
+      acc: 'var(--grn)',
+      title: 'Hybrid Drone × <span class="x">DfMA</span>',
+      sub: '360° leg rotation · fewer parts · stress-validated',
+      tags: ['Inventor', 'DfMA', 'Static Structural', 'AM'],
+      specs: [['360°','Leg rotation'],['↓','Assembly steps'],['✓','Stress improved'],['AM','Print-ready']],
+      problem: 'The original hybrid drone body was slow to assemble and structurally unproven where it mattered. The redesign had to cut assembly effort and improve the structure at the same time.',
+      method: 'Redesign in <strong>Inventor</strong> applying DfMA: reduced part count, snap-fit joints, alignment features, and additive manufacturing constraints respected throughout. A new <strong>360° leg rotation mechanism</strong> added landing versatility. Original and redesigned bodies compared in <strong>ANSYS Static Structural</strong>.',
+      verdict: 'Fewer assembly steps, simpler joint interfaces, and <strong>FEA confirmed improved stress distribution</strong> over the original design — DfMA applied and verified, not just cited.',
+      imgs: [['images/opt/cae-d.jpg','Redesigned body — FEA'],['images/opt/cae-e.jpg','Stress comparison'],['images/opt/cae-f.jpg','Mechanism detail']],
+      img: 'images/opt/cae-d.jpg'
+    },
+    '05': {
+      acc: 'var(--vio)',
+      title: '<span class="x">CFRP</span> Leaf Spring',
+      sub: 'Target stiffness at a fraction of the mass of steel',
+      tags: ['ANSYS', 'CFRP', 'Tensile testing', 'Vibration lab'],
+      specs: [['7800','Steel kg/m³'],['1600','CFRP kg/m³'],['✓','Stiffness target'],['FEA+Lab','Validated twice']],
+      problem: 'Steel leaf springs deliver the stiffness but carry a mass penalty. Could a carbon-fibre composite hit the same stiffness and safety factor — and could the simulation be trusted without physical evidence?',
+      method: 'Spring geometry in <strong>Inventor</strong>; ANSYS FEA for von Mises stress, deformation and safety factor with both material property sets. Then into the lab: <strong>physical tensile testing and vibration testing</strong>, measuring natural frequencies and validating the FEA against real data.',
+      verdict: '<strong>CFRP met the target stiffness at roughly 80% lower density</strong> and FEA predictions held against lab measurements. Cost acknowledged as the trade-off. Part of Materials Science, Solid Mechanics &amp; Vibration — assessed at <strong>73 (A)</strong>.',
+      imgs: [['images/opt/leaf-a.jpg','Leaf spring FEA — deformation'],['images/opt/leaf-b.jpg','Material comparison and test data']],
+      img: 'images/opt/leaf-a.jpg'
+    },
+    '06': {
+      acc: 'var(--cyn)',
+      title: 'Turbine Blade <span class="x">Fatigue</span>',
+      sub: 'Service life estimated from real wind statistics',
+      tags: ['QBlade', 'MATLAB', 'BEM', 'Weibull', 'FFT'],
+      specs: [['BEM','Aero model'],['Weibull','Wind statistics'],['FFT','Cycle extraction'],['D=Σn/N','Miner’s Rule']],
+      problem: 'Wind turbine blades rarely fail from a single extreme load — they fail from decades of accumulated cycles. Which case actually governs the blade: ultimate strength or fatigue?',
+      method: '<strong>QBlade</strong> BEM aerodynamics produced power, thrust and spanwise stress. A <strong>Weibull distribution</strong> fitted to site wind data converted wind statistics into load frequency. <strong>FFT cycle counting</strong> in MATLAB extracted stress cycles, <strong>Goodman correction</strong> handled mean stress, and <strong>Miner’s Rule</strong> accumulated the damage.',
+      verdict: 'The fatigue-governing case was identified and separated from the static failure case, and <strong>blade service life was estimated</strong> from cumulative damage — a complete aero-to-fatigue chain on real numbers.',
+      imgs: [['images/opt/wt-a.jpg','QBlade — blade simulation'],['images/opt/wt-b.jpg','Aerodynamic results'],['images/opt/wt-c.jpg','Structural response'],['images/opt/wt-d.jpg','Fatigue analysis output']],
+      img: 'images/opt/wt-a.jpg'
+    },
+    '07': {
+      acc: 'var(--blu)',
+      title: '<span class="x">Control</span> Modelling',
+      sub: 'Root locus · PID · verified against step-response targets',
+      tags: ['MATLAB', 'Simulink', 'Root locus', 'PID', 'Bode'],
+      specs: [['4','Systems modelled'],['0/1/2','System types'],['PI/PID','Controllers tuned'],['✓','Targets met']],
+      problem: 'Model four physical systems from first principles — mechanical and electrical — and tune a DC motor speed controller to meet defined step-response targets.',
+      method: 'Mass-spring-damper and RLC transfer functions derived from Newton’s and Kirchhoff’s laws. Steady-state error analysed across system types 0, 1 and 2. <strong>Root locus</strong> compensator design, then a DC motor model with <strong>PI/PID tuning</strong> — tf, step, rlocus, bode and margin in MATLAB.',
+      verdict: 'The DC motor speed controller <strong>met its step-response targets</strong>. Derive, design, tune, verify — classical control done from first principles rather than from a toolbox preset.',
+      imgs: [],
+      img: null
+    },
+    '08': {
+      acc: 'var(--amb)',
+      title: 'Mechatronic <span class="x">Cutter</span>',
+      sub: 'CAD to working prototype — designed, wired, built',
+      tags: ['Arduino', 'Multisim', 'Inventor', 'Workshop'],
+      specs: [['CAD→Build','Full pipeline'],['Arduino','Control'],['Multisim','Circuit design'],['✓','Tested cycles']],
+      problem: 'Design and physically build an automated strawberry-cutting mechanism — mechanical design, electronics and control integrated into one working machine.',
+      method: 'Mechanism and housing designed in <strong>Inventor</strong>. Motor drive and sensor circuits designed and simulated in <strong>Multisim</strong> before committing to hardware. Control logic written for <strong>Arduino</strong>. Then manufactured, assembled and commissioned in the workshop.',
+      verdict: 'A <strong>working prototype, physically built and tested</strong> through complete cutting cycles. The hands-on proof behind the simulation work — mechanical, electrical and control skills in one machine.',
+      imgs: [],
+      img: null
+    },
+    '09': {
+      acc: 'var(--red)',
+      title: 'Steam Pipe <span class="x">Integrity</span>',
+      sub: 'Creep, fatigue and fracture · PAUT inspection strategy',
+      tags: ['Larson-Miller', 'S-N', 'Fracture mechanics', 'PAUT NDT'],
+      specs: [['3','Failure modes'],['K_IC','Fracture criterion'],['a_c','Critical crack size'],['PAUT','Selected NDT']],
+      problem: 'High-temperature steam pipes accumulate three damage mechanisms at once: creep, fatigue and crack growth. The assessment had to quantify all three, then select the inspection method most likely to catch the damage in service.',
+      method: 'Creep life estimated via the <strong>Larson-Miller parameter</strong>. Fatigue assessed with S-N curves and Miner’s Rule under thermal pressure cycling. <strong>Fracture mechanics</strong> gave the stress intensity factor and critical crack size from K_IC. NDT trade study across MPI, radiography, eddy current and PAUT.',
+      verdict: '<strong>PAUT (phased-array ultrasonics) selected</strong>: subsurface detection, high-resolution crack sizing, no radiation hazard, no surface preparation — justified against each alternative on capability and practicality.',
+      imgs: [],
+      img: null
+    }
+  };
+  const ORDER = ['01','02','03','04','05','06','07','08','09'];
+  const ACCENTS = { '01':'var(--red)','02':'var(--blu)','03':'var(--amb)','04':'var(--grn)','05':'var(--vio)','06':'var(--cyn)','07':'var(--blu)','08':'var(--amb)','09':'var(--red)' };
+
+  // ═══ HERO NAME — per-letter build ══════════════════════
+  document.querySelectorAll('#hero-name .row').forEach((row, r) => {
+    const word = row.dataset.word;
+    let html = '';
+    [...word].forEach((c, i) => {
+      html += `<span class="ch" style="animation-delay:${(0.85 + r * 0.3 + i * 0.045).toFixed(3)}s">${c}</span>`;
+    });
+    if (row.dataset.dot) html += `<span class="ch dot" style="animation-delay:${(0.85 + r * 0.3 + word.length * 0.045).toFixed(3)}s">${row.dataset.dot}</span>`;
+    row.innerHTML = html;
+  });
+
+  // ═══ BUILD INDEX ROWS ══════════════════════════════════
+  const indexEl = document.getElementById('index');
+  ORDER.forEach(k => {
+    const d = CS[k];
+    const row = document.createElement('div');
+    row.className = 'idx-row';
+    row.setAttribute('role', 'button');
+    row.setAttribute('tabindex', '0');
+    row.setAttribute('aria-haspopup', 'dialog');
+    row.dataset.cs = k;
+    row.style.setProperty('--acc', ACCENTS[k]);
+    if (d.img) row.dataset.img = d.img;
+    row.dataset.num = k;
+    row.innerHTML = `
+      ${d.img ? `<div class="idx-thumb"><img src="${d.img}" alt="" loading="lazy"></div>` : ''}
+      <span class="idx-num">/${k}</span>
+      <div class="idx-main">
+        <div class="idx-title">${d.title.replace(/<[^>]+>/g, '')}</div>
+        <div class="idx-sub">${d.sub}</div>
+      </div>
+      <div class="idx-tags">${d.tags.slice(0,4).map(t => `<span>${t}</span>`).join('')}</div>
+      <span class="idx-arrow">→</span>`;
+    indexEl.appendChild(row);
+  });
+
+  // ═══ PRELOADER ═════════════════════════════════════════
+  const pre = document.getElementById('preloader');
+  if (rm) pre.remove();
+  else {
+    const preCount = document.getElementById('pre-count');
+    const preBar = document.getElementById('pre-bar');
+    const t0 = performance.now(), DUR = 600;
+    (function tick(now) {
+      const t = Math.min(1, (now - t0) / DUR);
+      const v = Math.round((1 - Math.pow(1 - t, 3)) * 100);
+      preCount.textContent = String(v).padStart(2, '0');
+      preBar.style.transform = `scaleX(${v / 100})`;
+      if (t < 1) requestAnimationFrame(tick);
+      else setTimeout(() => pre.classList.add('done'), 180);
+    })(t0);
+  }
+
+  // ═══ FLOW FIELD HERO ═══════════════════════════════════
+  const flow = document.getElementById('flow');
+  let mx = innerWidth / 2, my = innerHeight / 3;
+  if (!rm && flow) {
+    const fctx = flow.getContext('2d');
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    let FW, FH, parts = [];
+    const N = fine ? 850 : 320;
+    const COLORS = ['rgba(225,6,0,0.8)','rgba(41,121,255,0.7)','rgba(255,184,0,0.7)','rgba(0,200,83,0.65)'];
+
+    function spawn() {
+      return {
+        x: Math.random() * (FW || 1000),
+        y: Math.random() * (FH || 800),
+        px: 0, py: 0,
+        sp: 0.6 + Math.random() * 1.4,
+        life: 60 + Math.random() * 160,
+        c: Math.random() < 0.14 ? COLORS[Math.random() * COLORS.length | 0] : null
+      };
+    }
+    function sizeFlow() {
+      FW = flow.width = flow.offsetWidth * dpr;
+      FH = flow.height = flow.offsetHeight * dpr;
+      fctx.fillStyle = '#0A0A0B';
+      fctx.fillRect(0, 0, FW, FH);
+      if (!parts.length) for (let i = 0; i < N; i++) parts.push(spawn());
+    }
+    function angleAt(x, y, t) {
+      const s = 0.0016 / dpr * 1.4;
+      let a = Math.sin(y * s * 2.0 + t * 0.00028)
+            + Math.cos(x * s * 1.25 - t * 0.0002)
+            + Math.sin((x + y) * s * 0.65 + t * 0.00016);
+      const dx = x - mx * dpr, dy = y - my * dpr;
+      const d = Math.hypot(dx, dy);
+      const R = 200 * dpr;
+      if (d < R && d > 1) a += (1 - d / R) * 3.2;
+      return a * 1.35;
+    }
+    function drawFlow(t) {
+      requestAnimationFrame(drawFlow);
+      if (document.hidden || scrollY > flow.offsetHeight + 100) return;
+      fctx.fillStyle = 'rgba(10,10,11,0.085)';
+      fctx.fillRect(0, 0, FW, FH);
+      fctx.lineWidth = 1 * dpr;
+      for (const p of parts) {
+        p.px = p.x; p.py = p.y;
+        const a = angleAt(p.x, p.y, t);
+        p.x += Math.cos(a) * p.sp * dpr;
+        p.y += Math.sin(a) * p.sp * dpr;
+        p.life--;
+        if (p.life <= 0 || p.x < -10 || p.x > FW + 10 || p.y < -10 || p.y > FH + 10) {
+          Object.assign(p, spawn());
+          continue;
+        }
+        fctx.strokeStyle = p.c || 'rgba(242,240,234,0.22)';
+        fctx.beginPath();
+        fctx.moveTo(p.px, p.py);
+        fctx.lineTo(p.x, p.y);
+        fctx.stroke();
+      }
+    }
+    sizeFlow();
+    addEventListener('resize', sizeFlow);
+    requestAnimationFrame(drawFlow);
+  }
+
+  // ═══ CURSOR + PREVIEW (shared lerp loop) ═══════════════
+  const cursor = document.getElementById('cursor');
+  const preview = document.getElementById('preview');
+  const pImg = document.getElementById('preview-img');
+  const pNum = document.getElementById('preview-num');
+  let cx = mx, cy = my, px2 = mx, py2 = my;
+  if (fine && !rm) {
+    addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    document.addEventListener('mouseover', e => {
+      const row = e.target.closest('.idx-row');
+      const act = e.target.closest('a, button');
+      cursor.classList.toggle('is-view', !!row);
+      cursor.classList.toggle('is-hover', !row && !!act);
+    });
+    (function loop() {
+      cx += (mx - cx) * 0.22; cy += (my - cy) * 0.22;
+      px2 += (mx - px2) * 0.12; py2 += (my - py2) * 0.12;
+      cursor.style.transform = `translate(${cx}px,${cy}px) translate(-50%,-50%)`;
+      preview.style.left = px2 + 'px';
+      preview.style.top = py2 + 'px';
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  // ═══ TEXT SCRAMBLE ═════════════════════════════════════
+  const CHARS = '▓▒░<>/#%&@$0123456789';
+  function scramble(el, dur = 450) {
+    const final = el.dataset.text || (el.dataset.text = el.textContent);
+    const t0 = performance.now();
+    (function f(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const n = Math.floor(p * final.length);
+      el.textContent = final.slice(0, n) + [...final.slice(n)].map(c => c === ' ' ? ' ' : CHARS[Math.random() * CHARS.length | 0]).join('');
+      if (p < 1) requestAnimationFrame(f);
+      else el.textContent = final;
+    })(t0);
+  }
+  if (!rm) {
+    document.querySelectorAll('[data-scramble]').forEach(el => {
+      el.addEventListener('mouseenter', () => scramble(el));
+    });
+  }
+
+  // ═══ ROW EVENTS (hover preview + open) ═════════════════
+  document.querySelectorAll('.idx-row').forEach(row => {
+    if (fine && !rm) {
+      row.addEventListener('mouseenter', () => {
+        const src = row.dataset.img;
+        preview.style.setProperty('--acc', ACCENTS[row.dataset.cs]);
+        if (src) { pImg.src = src; pImg.style.display = 'block'; pNum.style.display = 'none'; }
+        else { pImg.style.display = 'none'; pNum.style.display = 'flex'; pNum.textContent = row.dataset.num; }
+        preview.classList.add('on');
+        scramble(row.querySelector('.idx-num'), 350);
+      });
+      row.addEventListener('mouseleave', () => preview.classList.remove('on'));
+    }
+    row.addEventListener('click', () => openCS(row.dataset.cs));
+    row.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCS(row.dataset.cs); }
+    });
+  });
+
+  // ═══ CASE STUDY OVERLAY ════════════════════════════════
+  const cs = document.getElementById('cs');
+  const csClose = document.getElementById('cs-close');
+  let current = null, lastFocus = null;
+
+  function openCS(k) {
+    const d = CS[k];
+    if (!d) return;
+    current = k;
+    cs.style.setProperty('--acc', d.acc);
+    document.getElementById('cs-crumb').textContent = `/${k} — Case study`;
+    document.getElementById('cs-watermark').textContent = k;
+    document.getElementById('cs-title').innerHTML = d.title;
+    document.getElementById('cs-meta').innerHTML = d.tags.map(t => `<span>${t}</span>`).join('');
+    document.getElementById('cs-specs').innerHTML = d.specs.map(([v, l]) => `<div><b>${v}</b><i>${l}</i></div>`).join('');
+    document.getElementById('cs-problem').innerHTML = d.problem;
+    document.getElementById('cs-method').innerHTML = d.method;
+    document.getElementById('cs-verdict').innerHTML = d.verdict;
+    document.getElementById('cs-imgs').innerHTML = d.imgs.map(([src, cap], i) =>
+      `<figure style="--i:${i}"><img src="${src}" alt="${cap}" loading="lazy"><figcaption>${cap}</figcaption></figure>`).join('');
+    const i = ORDER.indexOf(k);
+    const prev = ORDER[(i - 1 + ORDER.length) % ORDER.length];
+    const next = ORDER[(i + 1) % ORDER.length];
+    document.getElementById('cs-prev').dataset.cs = prev;
+    document.getElementById('cs-next').dataset.cs = next;
+    document.getElementById('cs-prev-t').textContent = CS[prev].title.replace(/<[^>]+>/g, '');
+    document.getElementById('cs-next-t').textContent = CS[next].title.replace(/<[^>]+>/g, '');
+    cs.scrollTop = 0;
+    cs.classList.add('open');
+    document.body.classList.add('locked');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.querySelectorAll('.cs-imgs figure').forEach(f => f.classList.add('in'));
+    }));
+    lastFocus = document.activeElement;
+    setTimeout(() => csClose.focus(), 400);
+  }
+  function closeCS() {
+    cs.classList.remove('open');
+    document.body.classList.remove('locked');
+    current = null;
+    if (lastFocus) lastFocus.focus();
+  }
+  csClose.addEventListener('click', closeCS);
+  document.getElementById('cs-prev').addEventListener('click', e => openCS(e.currentTarget.dataset.cs));
+  document.getElementById('cs-next').addEventListener('click', e => openCS(e.currentTarget.dataset.cs));
+  addEventListener('keydown', e => {
+    if (!current) return;
+    if (e.key === 'Escape') closeCS();
+    if (e.key === 'ArrowRight') openCS(document.getElementById('cs-next').dataset.cs);
+    if (e.key === 'ArrowLeft') openCS(document.getElementById('cs-prev').dataset.cs);
+  });
+
+  // ═══ MAGNETIC EMAIL BUTTON ═════════════════════════════
+  const magnet = document.getElementById('email-btn');
+  if (fine && !rm && magnet) {
+    magnet.addEventListener('mousemove', e => {
+      const r = magnet.getBoundingClientRect();
+      magnet.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px, ${(e.clientY - r.top - r.height / 2) * 0.3}px)`;
+    });
+    magnet.addEventListener('mouseleave', () => {
+      magnet.style.transition = 'transform 0.5s cubic-bezier(0.16,1,0.3,1), background 0.3s, color 0.3s, border-color 0.3s';
+      magnet.style.transform = '';
+      setTimeout(() => magnet.style.transition = '', 500);
+    });
+  }
+
+  // ═══ SCROLL: progress + reveals + stats + skew ═════════
+  const progress = document.getElementById('progress');
+  const page = document.getElementById('page');
+  const rvNodes = Array.from(document.querySelectorAll('.rv'));
+  const statNodes = Array.from(document.querySelectorAll('.stat-n[data-count]'));
+  const statDone = new WeakSet();
+  let lastY = scrollY, skew = 0, skewTarget = 0;
+
+  function inView(el, pad = 0.08) {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < 0) return true;
+    return r.top < innerHeight * (1 - pad);
+  }
+  function countUp(el) {
+    const target = parseInt(el.dataset.count, 10);
+    const html = el.innerHTML;
+    const tail = html.replace(/^\d+/, '');
+    const t0 = performance.now(), DUR = 1100;
+    (function step(now) {
+      const t = Math.min(1, (now - t0) / DUR);
+      el.innerHTML = Math.round(target * (1 - Math.pow(1 - t, 3))) + tail;
+      if (t < 1) requestAnimationFrame(step);
+      else el.innerHTML = html;
+    })(t0);
+  }
+  function onScrollWork() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    for (let i = rvNodes.length - 1; i >= 0; i--) {
+      if (inView(rvNodes[i])) { rvNodes[i].classList.add('in'); rvNodes.splice(i, 1); }
+    }
+    statNodes.forEach(el => {
+      if (!statDone.has(el) && inView(el, 0.15)) { statDone.add(el); if (!rm) countUp(el); }
+    });
+    skewTarget = Math.max(-1.2, Math.min(1.2, (scrollY - lastY) * 0.05));
+    lastY = scrollY;
+  }
+  addEventListener('scroll', onScrollWork, { passive: true });
+  addEventListener('resize', onScrollWork);
+  onScrollWork();
+  setTimeout(onScrollWork, 300);
+  if (document.fonts?.ready) document.fonts.ready.then(onScrollWork);
+  const poll = setInterval(() => { onScrollWork(); if (!rvNodes.length) clearInterval(poll); }, 250);
+  setTimeout(() => clearInterval(poll), 15000);
+
+  // scroll-velocity skew (the page "gives" as you scroll)
+  if (!rm) {
+    (function skewLoop() {
+      skew += (skewTarget - skew) * 0.08;
+      skewTarget *= 0.9;
+      page.style.transform = Math.abs(skew) > 0.01 ? `skewY(${skew.toFixed(3)}deg)` : '';
+      requestAnimationFrame(skewLoop);
+    })();
+  }
+
+  // ═══ MOBILE NAV ════════════════════════════════════════
+  const burger = document.getElementById('nav-burger');
+  const links = document.getElementById('nav-links');
+  let open = false;
+  function setMenu(v) {
+    open = v;
+    links.classList.toggle('open', v);
+    burger.children[0].style.transform = v ? 'rotate(45deg) translate(5px,5px)' : '';
+    burger.children[1].style.opacity = v ? '0' : '';
+    burger.children[2].style.transform = v ? 'rotate(-45deg) translate(5px,-5px)' : '';
+  }
+  burger.addEventListener('click', () => setMenu(!open));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+
+  // ═══ CLOCK ═════════════════════════════════════════════
+  const clock = document.getElementById('clock');
+  function tickClock() {
+    try {
+      clock.textContent = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }).format(new Date());
+    } catch { clock.textContent = new Date().toTimeString().slice(0, 5); }
+  }
+  tickClock();
+  setInterval(tickClock, 30000);
+})();
+</script>
+</body>
+</html>
