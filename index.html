@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SAMI JAITAPKAR — CFD / FEA / WORKSHOP</title>
+<title>Sami Jaitapkar — Mechanical Engineering Portfolio | CFD · FEA · CAD</title>
 <meta name="description" content="Mohammed Sami Jaitapkar — BEng (Hons) Mechanical Engineering, 2:1, ARU 2026. CFD, FEA, CAD and hands-on manufacturing. F1 brake cooling dissertation, drone structures, HVAC modelling.">
 <!-- Hosted on GitHub Pages: https://mosami10.github.io -->
-<meta property="og:title" content="SAMI JAITAPKAR — CFD / FEA / WORKSHOP">
-<meta property="og:description" content="BEng (Hons) Mechanical Engineering 2:1 · ARU 2026. Nine projects — simulation to workshop.">
+<meta property="og:title" content="Portfolio – Mohammed Sami Jaitapkar | Graduate Mechanical Engineer">
+<meta property="og:site_name" content="Sami Jaitapkar — Engineering Portfolio">
+<meta property="og:url" content="https://mosami10.github.io/">
+<meta property="og:description" content="BEng (Hons) 2:1 and Diploma (83%, Distinction). Nine engineering case studies: F1 brake cooling CFD, HVAC duct optimisation, a BAE Systems drone chassis and more — from CAD and simulation to workshop testing.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://mosami10.github.io/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta property="og:image:alt" content="Sami Jaitapkar — Graduate Mechanical Engineer, engineering portfolio">
+<meta name="twitter:title" content="Portfolio – Mohammed Sami Jaitapkar | Graduate Mechanical Engineer">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mosami10.github.io/images/og-image.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0B'/%3E%3Ctext x='32' y='46' font-family='Arial Black,sans-serif' font-weight='900' font-size='40' fill='%23F2F0EA' text-anchor='middle'%3ES%3C/text%3E%3Ccircle cx='52' cy='50' r='6' fill='%23E10600'/%3E%3C/svg%3E">
@@ -180,7 +186,7 @@ nav {
 .badge { position: relative; width: 110px; height: 110px; flex: 0 0 auto; }
 .badge svg { width: 100%; height: 100%; animation: spin 14s linear infinite; }
 .badge svg text {
-  font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0;
   fill: var(--dim); text-transform: uppercase;
 }
 .badge::after {
@@ -871,7 +877,7 @@ nav.menu-open { mix-blend-mode: normal; }
     <div class="badge" aria-hidden="true">
       <svg viewBox="0 0 100 100">
         <defs><path id="circ" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"/></defs>
-        <text><textPath href="#circ">open to work — graduate 2026 — open to work —</textPath></text>
+        <text><textPath href="#circ" textLength="237" lengthAdjust="spacing">open to work · graduate 2026 · </textPath></text>
       </svg>
     </div>
   </div>
@@ -1116,7 +1122,7 @@ nav.menu-open { mix-blend-mode: normal; }
       problem: 'Carbon brake discs run close to their thermal limit. Without effective duct cooling, disc temperature climbs lap after lap and braking performance degrades. The task: quantify exactly how duct geometry changes cooling performance — before anything is manufactured.',
       method: 'Three configurations (unducted disc, three-outlet dome Duct A, single-outlet bell-mouth scoop Duct B) modelled in <strong>ANSYS Fluent 2025 R2</strong> with k-ω SST turbulence. Isothermal moving-wall runs ranked heat transfer coefficients, <strong>MRF</strong> captured disc rotation, and full <strong>conjugate heat transfer</strong> resolved the temperature field inside the solid disc. Mesh verified with a three-mesh <strong>Richardson GCI of 0.82%</strong> on a 9.7M-cell mesh (published benchmark 1.40%), plus y+ checks.',
       verdict: '<strong>Duct B cooled the disc 109 K more than Duct A while carrying 65% less mass flow</strong>, traced to an 88.7% higher inlet Reynolds number on a 30.2 mm hydraulic diameter. The unducted baseline showed thermal runaway. CHT resolved a <strong>712 K peak disc temperature</strong>, confirming the isothermal assumption under-predicts reality. Final-year Individual Project — assessed at <strong>66 (B)</strong>.',
-      imgs: [['images/opt/nf1-a.jpg','Conjugate heat transfer — 712 K peak'],['images/opt/nf1-c.jpg','Velocity magnitude — 22 m/s peak'],['images/opt/nf1-b.jpg','Pathlines through the rotating domain'],['images/opt/nf1-d.jpg','Particle tracks — radial outflow'],['images/opt/nf1-e.jpg','Brake duct geometry — Inventor'],['images/opt/nf1-disc.jpg','Ventilated carbon brake disc — Inventor'],['images/opt/nf1-part.jpg','Caliper model — Inventor']],
+      imgs: [['images/opt/nf1-a.jpg','Conjugate heat transfer — 712 K peak'],['images/opt/nf1-c.jpg','Velocity magnitude — 22 m/s peak'],['images/opt/nf1-b.jpg','Pathlines through the rotating domain'],['images/opt/nf1-d.jpg','Particle tracks — radial outflow'],['images/opt/nf1-e.jpg','Brake duct geometry — Inventor'],['images/opt/nf1-assy-side.jpg','Brake assembly — side view'],['images/opt/nf1-assy-section.jpg','Brake assembly — section view'],['images/opt/nf1-disc.jpg','Ventilated carbon brake disc — Inventor'],['images/opt/nf1-part.jpg','Caliper model — Inventor']],
       img: 'images/opt/nf1-a.jpg'
     },
     '02': {
@@ -1140,7 +1146,7 @@ nav.menu-open { mix-blend-mode: normal; }
       problem: 'A jet-powered walking drone chassis, set as a BAE Systems brief: minimise mass without compromising structural integrity — and prove the design can actually be manufactured, not just rendered.',
       method: 'Two chassis concepts through <strong>ANSYS Static Structural</strong> under weight and impact load cases: full-lattice PLA versus selective-lattice PETG. The electric ducted fan housing was designed in <strong>carbon fibre</strong> with full section detail in Inventor. Print planning in <strong>Bambu Studio</strong>; production throughput modelled in <strong>Witness</strong> discrete event simulation.',
       verdict: 'The full-lattice concept failed structural validation and was rejected. The <strong>selective-lattice PETG chassis came in 13.8% lighter (93.48 g) at 23.4 MPa peak stress</strong>, validated by Tinius Olsen compression testing, and the Witness model scaled output from ~42 to ~500 units a month. Part of the CAE &amp; Manufacturing Project — assessed at <strong>70 (A)</strong>.',
-      imgs: [['images/opt/nspdr.jpg','SPIDR-Jet — full assembly'],['images/opt/cae-a.jpg','Chassis FEA — stress field'],['images/opt/nspdr-edf-side.jpg','Carbon-fibre EDF housing — side view'],['images/opt/nspdr-edf-section.jpg','EDF housing — section view']],
+      imgs: [['images/opt/nspdr.jpg','SPIDR-Jet — full assembly'],['images/opt/cae-a.jpg','Chassis FEA — stress field']],
       img: 'images/opt/nspdr.jpg'
     },
     '04': {
