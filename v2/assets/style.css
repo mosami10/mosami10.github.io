@@ -75,6 +75,7 @@ h2.big{font-size:clamp(84px,14vw,220px)}
 .specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:22px 0 26px;max-width:560px}
 .specs div{background:rgba(5,7,10,.72);backdrop-filter:blur(8px);padding:16px 16px 14px}
 .specs b{display:block;font:italic 800 clamp(30px,3.4vw,46px)/1 var(--disp);color:var(--acc);letter-spacing:.01em}
+.feat .specs div:last-child:nth-child(odd){grid-column:1/-1}
 .specs span{display:block;color:var(--dim);font-size:13.5px;margin-top:6px;line-height:1.3}
 .shot{position:absolute;right:5vw;top:50%;transform:translateY(-50%);width:min(44vw,640px);border:1px solid var(--line);background:#000}
 .shot img{display:block;width:100%;height:auto;opacity:.92}
@@ -147,11 +148,26 @@ body:not(.in) .hero .col>*:not(h1){opacity:0;transform:translateY(40px)}
 .cs-txt h3{color:var(--acc);margin-bottom:12px;padding-top:12px;border-top:1px solid var(--acc)}
 .cs-txt p{color:#c4ccd4}.cs-txt b,#cs b{color:var(--ink);font-weight:600}
 #cs .specs b{color:var(--acc)}
-#cs-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-#cs-gallery figure{border:1px solid var(--line);background:#000}
-#cs-gallery img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
-#cs-gallery figcaption{padding:10px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-
+.gh{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin:54px 0 16px;padding-top:14px;border-top:1px solid var(--line)}
+.gh h3{color:var(--acc)}
+.jg{display:flex;flex-wrap:wrap;gap:14px}
+.jg figure{flex:var(--r) 1 calc(var(--r)*210px);max-width:calc(var(--r)*400px);cursor:zoom-in;position:relative}
+.jg figure div{overflow:hidden;border:1px solid var(--line);background:#0b0d10}
+.jg img{display:block;width:100%;aspect-ratio:var(--r);object-fit:cover;transform:scale(1.12);clip-path:inset(0 0 100% 0);transition:transform 1.2s cubic-bezier(.2,.7,.2,1),clip-path 1s cubic-bezier(.76,0,.18,1);transition-delay:calc(.45s + var(--d)*70ms)}
+#cs.open .jg img{transform:none;clip-path:inset(0 0 0 0)}
+.jg figure:hover img{transform:scale(1.045);transition-delay:0s;transition-duration:.6s}
+.jg figure:hover div{border-color:var(--acc)}
+.jg figure.lead{flex-basis:100%;max-width:none;display:grid;grid-template-columns:minmax(0,calc(62vh*var(--r))) minmax(160px,1fr);gap:26px;align-items:end;margin-bottom:10px}
+.jg figure.lead figcaption{flex-direction:column;gap:8px;font-size:13px;color:#c4ccd4;padding-bottom:0}
+.jg figure.lead figcaption b{font:italic 800 clamp(40px,5vw,72px)/.9 var(--disp);letter-spacing:0}
+.jg figcaption{display:flex;gap:12px;padding:9px 2px 6px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.jg figcaption b{color:var(--acc);font-weight:500;white-space:nowrap}
+#lb{position:fixed;inset:0;z-index:95;background:rgba(2,3,4,.96);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:16px 22px;opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s;touch-action:pan-y}
+#lb.open{opacity:1;visibility:visible;transition:opacity .35s}
+#lb img{max-width:min(94vw,1500px);max-height:calc(100vh - 150px);object-fit:contain;opacity:0;transform:scale(.96);transition:opacity .4s,transform .6s cubic-bezier(.2,.7,.2,1);cursor:grab;user-select:none;-webkit-user-drag:none}
+#lb img.in{opacity:1;transform:none}
+.lb-top,.lb-bot{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px}
+#lb-cap{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#c4ccd4;text-align:center}
 
 /* kinetic type */
 .split{transform:skewX(calc(var(--sk,0)*-1deg));transition:transform .2s linear}
@@ -216,7 +232,10 @@ html.drag #cur i{transform:scale(.55);background:#fff;opacity:1}
   #sound span{display:none}
   footer{padding:20px 18px 80px}
   .cs-bar,.cs-in{padding-left:18px;padding-right:18px}
-  #cs-gallery{grid-template-columns:1fr}
+  .jg figure{flex-basis:calc(var(--r)*120px)}
+  .jg figure.lead{grid-template-columns:1fr;gap:6px}
+  .specs div:last-child:nth-child(odd){grid-column:1/-1}
+  .gh span{display:none}
   #gate{padding:18px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.split .ch{transform:none}#cur,.grain{display:none}}
