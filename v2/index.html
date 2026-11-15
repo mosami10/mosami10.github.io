@@ -31,7 +31,9 @@
 </div>
 
 <canvas id="gl" aria-hidden="true"></canvas>
-<div class="vig" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div id="cur" aria-hidden="true"><i></i><span></span></div>
+<div id="peek" aria-hidden="true"><img alt=""></div>
 <div id="bar" aria-hidden="true"></div>
 
 <header>
@@ -50,7 +52,7 @@
 <section class="hero" data-stage="hero">
   <div class="col">
     <p class="badge"><i></i>Open to graduate roles in England</p>
-    <h1><span>Sami</span><span>Jaitapkar<em>.</em></span></h1>
+    <h1 class="split"><span>Sami</span><span>Jaitapkar<em>.</em></span></h1>
     <p class="lede">Mechanical engineer. I simulate it, build it and test it.</p>
     <p class="sub">BEng (Hons) Mechanical Engineering, 2:1, Anglia Ruskin University, 2026.<br>That disc is my own CAD: the F1 brake from my dissertation.</p>
     <div class="cta">
@@ -60,13 +62,14 @@
       <a class="btn ghost" href="mailto:samijaitapkar10@gmail.com">Email</a>
     </div>
   </div>
-  <p class="scrollcue mono">Scroll to run the tunnel</p>
+  <p class="scrollcue mono">Scroll</p>
+  <p class="hint mono"><i></i>Drag to spin · touch the air</p>
 </section>
 
 <section class="feat" data-stage="f1" data-feature="01">
   <div class="col rv">
     <p class="mono tagline"><b>Run 01</b> Dissertation · individual</p>
-    <h2>F1 brake<br>cooling<em>.</em></h2>
+    <h2 class="split">F1 brake<br>cooling<em>.</em></h2>
     <p class="body">Three cooling designs for a carbon/carbon disc at 1,500 rpm, compared in ANSYS Fluent with conjugate heat transfer. The scoop duct cooled the disc 109 K more than the dome duct on 65% less mass flow.</p>
     <div class="specs"></div>
     <button class="btn hot" data-cs="01">Open case study</button>
@@ -76,7 +79,7 @@
 <section class="feat" data-stage="drone" data-feature="02">
   <div class="col rv">
     <p class="mono tagline"><b>Run 02</b> BAE Systems live brief · group lead</p>
-    <h2>Drone<br>chassis<em>.</em></h2>
+    <h2 class="split">Drone<br>chassis<em>.</em></h2>
     <p class="body">I led the group and ran four ANSYS FEA iterations myself. The final 3D printed chassis was 13.8% lighter at a safety factor of 1.54, then we compression tested printed parts.</p>
     <div class="specs"></div>
     <button class="btn hot" data-cs="02">Open case study</button>
@@ -86,7 +89,7 @@
 <section class="feat" data-stage="hvac" data-feature="03">
   <div class="col rv">
     <p class="mono tagline"><b>Run 03</b> Individual</p>
-    <h2>HVAC duct<em>.</em></h2>
+    <h2 class="split">HVAC duct<em>.</em></h2>
     <p class="body">Six CAD and CFD loops cut the pressure drop of an automotive HVAC duct by 27% and balanced the outlet split to about 50/50. The results fed a Simulink cabin heating model.</p>
     <div class="specs"></div>
     <button class="btn hot" data-cs="03">Open case study</button>
@@ -94,10 +97,12 @@
   <figure class="shot rv"><img loading="lazy" src="images/opt/hvac-a.jpg" alt="CAD geometry of the HVAC duct"><figcaption class="mono">Duct geometry · final routing</figcaption></figure>
 </section>
 
+<div class="marq" aria-hidden="true"><div>CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦ CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦ CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦ CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦</div></div>
+
 <section id="work" class="panel">
   <div class="wrap">
     <p class="mono tagline rv"><b>02</b> Work</p>
-    <h2 class="rv">Nine case studies<em>.</em></h2>
+    <h2 class="split rv">Nine case studies<em>.</em></h2>
     <p class="body rv">Each one states the brief, what I did and the result. Group work is marked as group work.</p>
     <div id="index" class="rv"></div>
   </div>
@@ -107,7 +112,7 @@
   <div class="wrap two">
     <div>
       <p class="mono tagline rv"><b>03</b> About</p>
-      <h2 class="rv">Decisions,<br>backed by data<em>.</em></h2>
+      <h2 class="split rv">Decisions,<br>backed by data<em>.</em></h2>
       <p class="body rv">Simulation without engineering judgement is only pictures. I check a result before I trust it: mesh studies, y+ checks, and lab tests against the FEA where I can get them.</p>
       <p class="body rv">My strongest work is the full loop. Model it, test it on screen, build it, then test it for real. A three year mechanical engineering diploma in Mumbai (83%, Distinction) gave me the workshop base. The BEng at Anglia Ruskin added CFD and FEA on top.</p>
       <p class="body rv">I finished my final year while working night shifts at a parcel depot, so I know how to plan around fixed hours and still deliver.</p>
@@ -135,7 +140,7 @@
 <section id="toolbox" class="panel">
   <div class="wrap">
     <p class="mono tagline rv"><b>04</b> Toolbox</p>
-    <h2 class="rv">Simulation<br>to workshop<em>.</em></h2>
+    <h2 class="split rv">Simulation<br>to workshop<em>.</em></h2>
     <div class="tools rv">
       <div><h3>CFD</h3><ul><li>ANSYS Fluent 2025 R2</li><li>Fluent Meshing, poly hexcore</li><li>ANSYS Discovery</li><li>k omega SST, CHT, MRF</li><li>Mesh independence, y+</li></ul></div>
       <div><h3>FEA and structures</h3><ul><li>ANSYS Mechanical</li><li>Static Structural</li><li>QBlade</li><li>Fatigue: Goodman, Miner</li><li>Fracture mechanics</li></ul></div>
@@ -148,7 +153,7 @@
 <section id="experience" class="panel">
   <div class="wrap">
     <p class="mono tagline rv"><b>05</b> Experience</p>
-    <h2 class="rv">Education<br>and work<em>.</em></h2>
+    <h2 class="split rv">Education<br>and work<em>.</em></h2>
     <ol class="time">
       <li class="rv"><span class="mono">2024 to 2026</span><div><b>BEng (Hons) Mechanical Engineering</b><i>Anglia Ruskin University · Chelmsford · 2:1</i><p>Individual dissertation on F1 brake cooling, supervised by Dr Samuel J. McMaster. Led a group on a BAE Systems live brief: a drone chassis taken from FEA to additive manufacture and physical test.</p></div></li>
       <li class="rv"><span class="mono">2019 to 2022</span><div><b>Diploma in Mechanical Engineering</b><i>M.H. Saboo Siddik Polytechnic · Mumbai · 83%, Distinction</i><p>Three year technical diploma: engineering drawing, CAD and solid modelling, strength of materials, thermal and fluid engineering, theory of machines and machine design. Final project: voice based lift control.</p></div></li>
@@ -158,10 +163,12 @@
   </div>
 </section>
 
+<div class="marq" aria-hidden="true"><div>ANSYS Fluent ✦ Inventor ✦ MATLAB ✦ QBlade ✦ Tensile test ✦ Arduino ✦ 3D print ✦ ANSYS Fluent ✦ Inventor ✦ MATLAB ✦ QBlade ✦ Tensile test ✦ Arduino ✦ 3D print ✦ ANSYS Fluent ✦ Inventor ✦ MATLAB ✦ QBlade ✦ Tensile test ✦ Arduino ✦ 3D print ✦ ANSYS Fluent ✦ Inventor ✦ MATLAB ✦ QBlade ✦ Tensile test ✦ Arduino ✦ 3D print ✦</div></div>
+
 <section id="contact" class="contact" data-stage="hero">
   <div class="col rv">
     <p class="mono tagline"><b>06</b> Contact</p>
-    <h2 class="big">Let's talk<em>.</em></h2>
+    <h2 class="split big">Let's talk<em>.</em></h2>
     <p class="body">Open to graduate and junior mechanical engineering roles across England. UK Graduate visa with full right to work until October 2028.</p>
     <a class="mail" href="mailto:samijaitapkar10@gmail.com">samijaitapkar10@gmail.com</a>
     <div class="cta">
@@ -182,7 +189,7 @@
 
 <div id="hud" class="mono" aria-hidden="true"></div>
 
-<div id="cs" role="dialog" aria-modal="true" aria-labelledby="cs-title">
+<div id="cs" data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="cs-title">
   <div class="cs-bar"><span id="cs-n" class="mono"></span><div><button id="cs-prev" class="btn sm">Previous</button><button id="cs-next" class="btn sm">Next</button><button id="cs-close" class="btn sm hot">Close</button></div></div>
   <div class="cs-in">
     <p id="cs-kind" class="mono tagline"></p>
