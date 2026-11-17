@@ -10,8 +10,7 @@
 <meta property="og:image" content="https://mosami10.github.io/images/og-card-2026.jpg">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#05070a">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;1,700;1,800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body data-stage="hero">
@@ -31,7 +30,6 @@
 </div>
 
 <canvas id="gl" aria-hidden="true"></canvas>
-<div class="grain" aria-hidden="true"></div>
 <div id="cur" aria-hidden="true"><i></i><span></span></div>
 <div id="peek" aria-hidden="true"><img alt=""></div>
 <div id="bar" aria-hidden="true"></div>
@@ -54,7 +52,7 @@
     <p class="badge"><i></i>Open to graduate roles in England</p>
     <h1 class="split"><span>Sami</span><span>Jaitapkar<em>.</em></span></h1>
     <p class="lede">Mechanical engineer. I simulate it, build it and test it.</p>
-    <p class="sub">BEng (Hons) Mechanical Engineering, 2:1, Anglia Ruskin University, 2026.<br>That disc is my own CAD: the F1 brake from my dissertation.</p>
+    <p class="sub">BEng (Hons) Mechanical Engineering, 2:1, Anglia Ruskin University, 2026.<br>That disc is my own CAD. Hold the brake and see what my dissertation found.</p>
     <div class="cta">
       <a class="btn hot" href="#work">See the work</a>
       <a class="btn" href="cv/Sami-Jaitapkar-CV.pdf" download>Download CV</a>
@@ -63,14 +61,26 @@
     </div>
   </div>
   <p class="scrollcue mono">Scroll</p>
-  <p class="hint mono"><i></i>Drag to spin · touch the air</p>
+  <div id="rig">
+    <div class="rig-read">
+      <div><span class="mono">Disc temperature</span><p><b id="rt">300</b><i>K</i></p></div>
+      <div><span class="mono">Speed</span><p><b id="rr">1,500</b><i>rpm</i></p></div>
+    </div>
+    <p class="rig-warn mono">Thermal runaway</p>
+    <div class="rig-cfg" role="group" aria-label="Cooling design">
+      <button data-cfg="none" class="on" aria-pressed="true">No duct</button><button data-cfg="dome" aria-pressed="false">Dome duct</button><button data-cfg="scoop" aria-pressed="false">Scoop duct</button>
+    </div>
+    <button id="brake" aria-label="Hold to brake"><span>Hold to<br>brake</span></button>
+    <p id="rig-msg"></p>
+    <p class="rig-note mono">Drag the disc to spin it · Illustrative model set to my CFD results</p>
+  </div>
 </section>
 
 <section class="feat" data-stage="f1" data-feature="01">
   <div class="col rv">
     <p class="mono tagline"><b>Run 01</b> Dissertation · individual</p>
     <h2 class="split">F1 brake<br>cooling<em>.</em></h2>
-    <p class="body">Three cooling designs for a carbon/carbon disc at 1,500 rpm, compared in ANSYS Fluent with conjugate heat transfer. The scoop duct cooled the disc 109 K more than the dome duct on 65% less mass flow.</p>
+    <p class="body">Three cooling designs for a carbon/carbon disc at 1,500 rpm, compared in ANSYS Fluent with conjugate heat transfer. The scoop duct held the disc 109 K cooler than the dome duct on 39% less mass flow.</p>
     <div class="specs"></div>
     <button class="btn hot" data-cs="01">Open case study</button>
   </div>
@@ -96,8 +106,6 @@
   </div>
   <figure class="shot rv"><img loading="lazy" src="images/opt/hvac-a.jpg" alt="CAD geometry of the HVAC duct"><figcaption class="mono">Duct geometry · final routing</figcaption></figure>
 </section>
-
-<div class="marq" aria-hidden="true"><div>CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦ CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦ CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦ CFD ✦ FEA ✦ Thermal ✦ Fatigue ✦ CAD ✦ Additive ✦ Workshop ✦</div></div>
 
 <section id="work" class="panel">
   <div class="wrap">
@@ -187,7 +195,6 @@
   <span>Models: my own Inventor CAD · Sound: generated live</span>
 </footer>
 
-<div id="hud" class="mono" aria-hidden="true"></div>
 
 <div id="cs" data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="cs-title">
   <div class="cs-bar"><span id="cs-n" class="mono"></span><div><button id="cs-prev" class="btn sm">Previous</button><button id="cs-next" class="btn sm">Next</button><button id="cs-close" class="btn sm hot">Close</button></div></div>
